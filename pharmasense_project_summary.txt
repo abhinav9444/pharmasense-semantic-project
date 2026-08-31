@@ -3,81 +3,173 @@ abhinav.aq.singh
 ______________________________
 
 Objective
-Convert 200 DrugBank Lite records from TogoDB into an OWL ontology, RDF knowledge graph and SPARQL-based semantic layer enabled with SLM query support.
+--------
+Convert 200 DrugBank Lite records from TogoDB into a structured OWL ontology, RDF/Turtle knowledge graph and SPARQL query layer, with a semantic layer for natural-language access.
 
-1. Data Collection
-- Scraped DrugBank Lite IDs 1–200.
-- Stored source fields in structured JSON.
-- Added cleaning and retry handling.
+Approach and Reasoning
+----------------------
+I focused on correctness of the data model rather than simply increasing graph size.
 
-2. Data Model
-Modeled:
-Drug → Protein Target
-Drug → Pathway
-Drug → Drug Category
-Drug → Drug Type
-Drug → ATC Classification
+1. Data understanding and extraction
+- Studied the TogoDB DrugBank Lite structure first.
+- Identified useful fields and relationships instead of treating the export as flat text.
+- Scraped IDs 1–200 and stored the source data in JSON.
+- Added cleaning and retry handling because source values contained HTML, special characters and missing-value text.
 
-This enabled relationship-based SPARQL queries.
+2. RDF/OWL modelling
+I modeled the domain around the relationships needed for the assignment:
+- Drug
+- ProteinTarget
+- Pathway
+- DrugCategory
+- DrugType
+- ATCClassification
 
-3. OWL Ontology
-Created `ontology/pharmasense.ttl` with the required classes, properties, domain/range, labels/comments, inverse properties, a transitive property and OWL restrictions for inference.
+Important relationships:
+Drug → hasTarget → ProteinTarget
+Drug → participatesInPathway → Pathway
+Drug → hasCategory → DrugCategory
+Drug → hasDrugType → DrugType
+Drug → hasATCClassification → ATCClassification
+ProteinTarget → associatedWithPathway → Pathway
 
-4. RDF Knowledge Graph
-Converted JSON to RDF/Turtle using RDFLib.
-Current graph: ~4,000 triples from 200 drug records.
+I chose separate RDF resources for entities such as targets and pathways because this allows relationship-based queries and inference instead of keeping everything as plain text.
 
-5. SPARQL
-Implemented the five required queries:
-1. Drugs sharing a protein target with Lepirudin
-2. Drug pairs sharing more than 3 pathways
-3. Thrombin mechanism with non-B01 ATC code
-4. Bleeding toxicity with more than one category
-5. Drugs inferred as both BiotechDrug and AnticoagulantDrug
+3. OWL modelling decisions
+- Added rdfs:label/rdfs:comment for readability.
+- Added domain/range restrictions to make relationships explicit.
+- Added inverse properties where they were semantically valid.
+- Added a transitive category property.
+- Added OWL equivalent-class restrictions for BiotechDrug and AnticoagulantDrug.
 
-Results are stored in `query_results/`.
+The inference design was deliberate:
+hasDrugType → BiotechType ⇒ BiotechDrug
+hasCategory → Anticoagulants ⇒ AnticoagulantDrug
 
-6. Semantic Layer
-`semantic_layer.py` accepts natural-language questions.
-- Five assignment questions use validated SPARQL directly.
-- Other questions use local Gemma 3 4B through Ollama to generate SPARQL.
-- Only read-only SELECT/ASK queries are allowed.
-- Shows query path, actual graph results and grounded natural-language answers.
+4. RDF/Turtle generation
+Used RDFLib to transform JSON into RDF triples and serialize the graph as Turtle.
 
-Challenges Faced
-1. RDF cleaning
-Problem: Source values contained HTML, special characters and inconsistent text.
-Fix: Added cleaning and URI normalization.
+The graph was kept reasonably compact while retaining the relationships required by the five research queries. The goal was not maximum scale; it was enough accurate information to support the required semantics.
 
-2. OWL inference
-Problem: BiotechDrug and AnticoagulantDrug were not initially inferred.
-Fix: Added OWL equivalent-class restrictions and verified with OWL-RL.
+5. SPARQL modelling
+I wrote the five required queries directly against the RDF model.
 
-3. SPARQL prefix handling
-Problem: Prefixes were lost when loading individual queries.
-Fix: Preserved namespace prefixes during query loading.
+The queries were designed from the research questions backwards:
+- Identify the entities required in the question.
+- Identify the RDF relationships needed to connect them.
+- Return only relevant result columns.
+- Test each query separately against the graph.
 
-4. Query 2 became empty after graph reduction
-Problem: Relevant pathway relationships were removed.
-Fix: Preserved all needed pathway IDs and target-associated pathways.
+6. Accuracy and validation
+Validation was done at multiple levels:
+- Ontology parsing with RDFLib.
+- RDF graph inspection with `verify_graph.py`.
+- OWL-RL reasoning test with `test_reasoning.py`.
+- Execution of all five SPARQL queries with stored result files.
+- Semantic-layer testing using the same graph and validated queries.
 
-5. Wrong classification of custom questions
-Problem: An unrelated question could be mapped to one of the five fixed queries.
-Fix: Added direct matching for the five validated questions; other questions use the custom path.
+Challenges / Failure Paths
+--------------------------
+1. Data cleaning
+Problem:
+Raw values contained HTML, punctuation and inconsistent missing-value strings.
 
-6. Gemma query formatting
-Problem: Gemma sometimes returned explanation instead of a clean SPARQL query.
-Fix: Added query extraction and retry logic.
+Fix:
+Added cleaning and URI-normalization before RDF generation.
 
-Validation
-- Ontology parsed successfully with RDFLib.
-- Graph checked with `verify_graph.py`.
-- OWL reasoning verified with `test_reasoning.py`.
-- All five SPARQL queries executed successfully.
-- Semantic-layer demo saved in `semantic_layer_demo.txt`.
+2. OWL inference failed initially
+Problem:
+The expected BiotechDrug and AnticoagulantDrug types were not inferred.
+
+Investigation:
+The explicit `hasDrugType` and `hasCategory` facts existed, but the ontology did not yet contain the required equivalence restrictions.
+
+Fix:
+Added OWL restrictions and verified the result again with OWL-RL.
+
+3. SPARQL prefix/query-loading error
+Problem:
+When queries were split from `queries.sparql`, namespace prefixes were lost and Query 5 failed with an unknown `pharma` prefix.
+
+Fix:
+Preserved the required PREFIX declarations while loading each query.
+
+4. Query 2 became empty after reducing the graph
+Problem:
+The graph had been reduced too aggressively and important pathway relationships were lost.
+
+Approach:
+I checked the RDF rather than adding artificial triples. The diagnosis showed that target-associated pathway information was needed.
+
+Fix:
+Retained all relevant pathway IDs from the source and modeled:
+Drug → hasTarget → ProteinTarget → associatedWithPathway → Pathway
+
+This restored genuine shared-pathway results.
+
+5. Query 1 returned irrelevant empty rows
+Problem:
+The initial query allowed unrelated drugs with missing target values to appear.
+
+Fix:
+Made the target, gene and function relationships mandatory so only genuine shared-target results are returned.
+
+6. Semantic-layer classification issue
+Problem:
+A custom question such as an ATC-code question was incorrectly classified as one of the five fixed queries.
+
+Fix:
+Used direct matching for the five validated assignment questions. Other questions now go through the custom SPARQL-generation path.
+
+7. Local model sometimes returned explanation instead of SPARQL
+Problem:
+Gemma could return extra text instead of a clean SELECT/ASK query.
+
+Fix:
+Added query extraction and retry logic, then validated that only read-only SELECT/ASK queries are executed.
+
+Why These Choices
+-----------------
+The main design principle was accuracy first.
+
+I avoided:
+- inventing triples just to make a query return results,
+- keeping unnecessary fields when they were not needed by the assignment,
+- making the graph large just for scale,
+- using an LLM to rewrite already validated queries.
+
+The five assignment queries use validated SPARQL directly. The local Gemma model is used only for understanding custom questions and generating additional read-only SPARQL when required.
+
+Current Result
+--------------
+- 200 scraped DrugBank Lite records
+- Valid OWL ontology
+- RDF/Turtle knowledge graph
+- 5 validated SPARQL queries
+- OWL-RL inference for the required reasoning test
+- Natural-language semantic layer
+- Stored query and semantic-layer outputs for verification
 
 Final Flow
-TogoDB → Scraper → JSON → OWL Ontology → RDF Graph → SPARQL → OWL-RL Reasoning → Semantic Layer → Grounded Answer
+----------
+TogoDB
+  ↓
+Scraper
+  ↓
+Structured JSON
+  ↓
+OWL ontology design
+  ↓
+JSON → RDF/Turtle
+  ↓
+SPARQL validation
+  ↓
+OWL-RL reasoning
+  ↓
+Semantic layer
+  ↓
+Grounded answer
 
-Key Learning
-The main learning was how to represent domain relationships explicitly in RDF/OWL so the data can be queried and reasoned over instead of being treated only as raw fields.
+Main Learning I felt...
+----------------------
+The most important learning was that building a knowledge graph is mainly a modelling problem, not a scale problem. The quality of the ontology, relationships, identifiers and query design determines whether the final SPARQL results are accurate and meaningful.
