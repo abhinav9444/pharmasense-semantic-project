@@ -1,24 +1,30 @@
 # PharmaSense Semantic Project
 
-Converts DrugBank Lite data into an OWL ontology, RDF knowledge graph and SPARQL query layer.
+## Overview
 
-## Flow
+A small semantic-web project built from 200 DrugBank Lite records scraped from TogoDB.
 
-DrugBank Lite → JSON → OWL Ontology → RDF Graph → SPARQL → OWL-RL reasoning → Semantic Layer
+The project converts the source data into an OWL ontology and RDF knowledge graph, then uses SPARQL for the five required research queries. Query 5 uses OWL-RL reasoning. A small semantic layer maps natural-language questions to the validated queries or generates a read-only SPARQL query for other questions.
 
-## Project Structure
+## Structure
 
 ```text
-pharmasense-semantic-project/
+pharmasense-semantic-layer-project/
 ├── data/
+│   └── scraped_drugbank_1_200.json
 ├── ontology/
+│   └── pharmasense.ttl
 ├── query_results/
+│   ├── query1.txt
+│   ├── query2.txt
+│   ├── query3.txt
+│   ├── query4.txt
+│   └── query5.txt
 ├── drugbank_scraper.py
 ├── populate_graph.py
 ├── pharmasense_kg.ttl
 ├── queries.sparql
 ├── run_all_queries.py
-├── run_reasoning_query.py
 ├── semantic_layer.py
 ├── semantic_layer_demo.txt
 ├── test_reasoning.py
@@ -27,36 +33,74 @@ pharmasense-semantic-project/
 └── requirements.txt
 ```
 
+## Project Flow
+
+```text
+DrugBank Lite
+   ↓
+JSON
+   ↓
+OWL Ontology
+   ↓
+RDF Knowledge Graph
+   ↓
+SPARQL Queries
+   ↓
+OWL-RL reasoning for Query 5
+   ↓
+Semantic Layer
+```
+
 ## What was done
 
-1. Scraped 200 DrugBank Lite records (IDs 1–200) and stored the source data as JSON.
-2. Created a hand-authored OWL ontology with the required classes, object properties, datatype properties, inverse relationships and transitive property.
-3. Added OWL restrictions so drug types and anticoagulant classification can be inferred.
-4. Converted the JSON records into RDF triples and generated `pharmasense_kg.ttl`.
-5. Wrote and tested the five required SPARQL queries.
-6. Added OWL-RL reasoning for the inference query.
-7. Built `semantic_layer.py` so the five assignment questions use validated SPARQL, while other questions can be converted to read-only SPARQL through local Ollama/Gemma.
-8. Kept SPARQL results visible in the semantic-layer output to show grounding.
+### Phase 1
 
-## Problems and fixes
+Scraped IDs 1–200 and stored the key-value data in JSON. Created a hand-authored OWL ontology with the required classes, object properties, datatype properties, inverse properties and a transitive property.
 
-- SPARQL parsing failed because query sections and prefixes were not preserved correctly. Query loading was corrected.
-- Query 5 initially failed on the `pharma` prefix. Prefix handling was fixed.
-- Category labels were changed to standard `rdfs:label`.
-- The first reasoning test did not infer the required classes. OWL equivalent-class restrictions were added and reasoning then passed.
-- Query 2 was initially empty because pathway IDs were only partially extracted. Pathway extraction was corrected and target-associated pathways were retained.
-- Query 1 initially returned unrelated rows with empty target fields. The query was tightened to require a real shared target.
-- Custom semantic-layer questions could be misclassified as one of the five validated queries. The five assignment questions are now matched explicitly; other questions use the custom path.
-- Docker was considered for the enterprise deployment stage but is deferred because Docker is not currently available on the development machine.
+The ontology also defines restrictions that allow `BiotechDrug`, `SmallMoleculeDrug` and `AnticoagulantDrug` to be inferred from existing properties.
 
-## Current validation
+### Phase 2
 
-- Records: **200**
-- Ontology triples: **152**
-- Knowledge graph triples: **4,002**
-- SPARQL queries: **5**
-- OWL-RL inference tested successfully
-- Sample semantic-layer output: `semantic_layer_demo.txt`
+Converted the 200 JSON records into RDF using the ontology. Only relationships useful to the assignment were retained instead of carrying the complete source export into the graph.
+
+### Phase 3
+
+Implemented and executed the five required SPARQL queries. Query results are stored under `query_results/`.
+
+### Phase 4
+
+`semantic_layer.py` accepts natural-language questions.
+
+For the five known assignment questions:
+
+```text
+Question → validated query → RDF graph → grounded result
+```
+
+For other questions:
+
+```text
+Question → Gemma → SPARQL → RDF graph → results → natural-language answer
+```
+
+The generated SPARQL and actual results are shown for custom questions. A sample run is stored in `semantic_layer_demo.txt`.
+
+## Main problems and fixes
+
+- **Ontology reasoning initially failed:** OWL equivalence restrictions were added so the expected drug classes could be inferred.
+- **Category labels:** used standard `rdfs:label` instead of creating a custom label property.
+- **SPARQL loading:** prefix handling was fixed when extracting the five queries from one file.
+- **Query 2 was initially empty:** pathway extraction captured only one pathway from a multi-value field. The parser was corrected to retain all pathway IDs.
+- **Query 1 returned empty rows:** optional target fields caused unrelated drugs to appear. The query was tightened to require the shared target and its details.
+- **Custom semantic-layer questions:** Gemma could return explanatory text instead of SPARQL, so the response parser now extracts the first `SELECT` or `ASK` query and rejects write operations.
+
+## Current checks
+
+- 200 drug records
+- 152 ontology triples
+- 4,002 knowledge-graph triples
+- 5 validated SPARQL queries
+- 4,673 triples after OWL-RL reasoning in the latest reasoning run
 
 ## Run
 
@@ -66,16 +110,11 @@ python validate_ontology.py
 python populate_graph.py
 python verify_graph.py
 python run_all_queries.py
-python test_reasoning.py
 python semantic_layer.py
 ```
 
-For custom semantic-layer questions, Ollama must be running with Gemma 3 4B:
+For custom natural-language questions, Ollama with Gemma 3 4B is required:
 
 ```bash
 ollama pull gemma3:4b
 ```
-
-## Notes
-
-The project focuses on the required RDF/OWL/SPARQL modelling rather than a UI. The stored query results and semantic-layer demo provide reproducible evidence of the work.

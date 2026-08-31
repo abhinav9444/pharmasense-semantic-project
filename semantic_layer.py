@@ -144,9 +144,10 @@ def extract_query(text):
 
 def generate_query(question, schema, graph_data):
     system = """
-Generate exactly one SPARQL SELECT or ASK query for the PharmaSense knowledge graph.
+Generate exactly one SPARQL query for the PharmaSense knowledge graph.
 Return ONLY the query. Do not explain it. Do not use markdown.
-Use only terms from the supplied ontology and graph.
+The query must be read-only and must start with SELECT or ASK.
+Use only terms from the supplied ontology.
 
 Prefix:
 PREFIX pharma: <http://example.org/pharmasense#>
@@ -157,6 +158,7 @@ Ontology:
     try:
         return extract_query(ask_gemma(system, question))
     except ValueError:
+        # Retry without the large graph dump if the model ignored the format.
         retry = """
 Return only one SPARQL SELECT query. No explanation or markdown.
 Use these PharmaSense fields where relevant:

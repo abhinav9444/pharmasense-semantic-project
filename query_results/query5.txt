@@ -1,0 +1,4 @@
+http://example.org/pharmasense#Drug_DB00054 | DB00054 | Abciximab
+http://example.org/pharmasense#Drug_DB00006 | DB00006 | Bivalirudin
+http://example.org/pharmasense#Drug_DB00063 | DB00063 | Eptifibatide
+http://example.org/pharmasense#Drug_DB00001 | DB00001 | Lepirudin

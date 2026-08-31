@@ -1,64 +1,70 @@
 from pathlib import Path
+
 from rdflib import Graph
 from owlrl import DeductiveClosure, OWLRL_Semantics
 
 GRAPH_FILE = "pharmasense_kg.ttl"
 QUERY_FILE = "queries.sparql"
-RESULT_DIR = Path("query_results")
+RESULTS_DIR = Path("query_results")
 
 
-def load_queries():
-    text = Path(QUERY_FILE).read_text(encoding="utf-8")
+def load_queries(text):
     prefixes = "\n".join(
-        line.strip() for line in text.splitlines()
+        line for line in text.splitlines()
         if line.strip().upper().startswith("PREFIX ")
     )
-    sections = text.split("#################################################################")
+
     queries = []
-    for section in sections:
-        start = section.find("SELECT")
-        if start >= 0:
-            queries.append(prefixes + "\n\n" + section[start:].strip())
-    if len(queries) != 5:
-        raise ValueError(f"Expected 5 queries, found {len(queries)}")
+    for section in text.split("#################################################################"):
+        select_position = section.find("SELECT")
+        if select_position == -1:
+            continue
+        queries.append(prefixes + "\n\n" + section[select_position:].strip())
+
     return queries
 
 
-def execute(graph, query, output_file):
+def execute_query(graph, query, output_file):
     results = graph.query(query)
     with open(output_file, "w", encoding="utf-8") as file:
         for row in results:
             file.write(" | ".join(str(value) for value in row) + "\n")
-    print(f"Saved: {output_file}")
 
 
 def main():
+    RESULTS_DIR.mkdir(exist_ok=True)
+
     print("Loading queries...")
-    queries = load_queries()
-    print(f"Queries found: {len(queries)}\n")
+    query_text = Path(QUERY_FILE).read_text(encoding="utf-8")
+    queries = load_queries(query_text)
+    print(f"Queries found: {len(queries)}")
 
-    print("Loading knowledge graph...")
+    if len(queries) != 5:
+        raise ValueError(f"Expected 5 queries, found {len(queries)}")
+
     graph = Graph()
+    print("\nLoading knowledge graph...")
     graph.parse(GRAPH_FILE, format="turtle")
-    print(f"Graph triples: {len(graph)}\n")
+    print(f"Graph triples: {len(graph)}")
 
-    RESULT_DIR.mkdir(exist_ok=True)
-
-    for number in range(1, 5):
-        print(f"Executing Query {number}...")
-        execute(graph, queries[number - 1], RESULT_DIR / f"query{number}.txt")
+    for number in range(4):
+        output_file = RESULTS_DIR / f"query{number + 1}.txt"
+        print(f"\nExecuting Query {number + 1}...")
+        execute_query(graph, queries[number], output_file)
+        print(f"Saved: {output_file}")
 
     print("\nPreparing graph for Query 5...")
-    inferred = Graph()
-    for triple in graph:
-        inferred.add(triple)
-    print(f"Original triples: {len(graph)}")
+    reasoning_graph = Graph()
+    reasoning_graph.parse(GRAPH_FILE, format="turtle")
+    print(f"Original triples: {len(reasoning_graph)}")
     print("Applying OWL-RL reasoning...")
-    DeductiveClosure(OWLRL_Semantics).expand(inferred)
-    print(f"Triples after reasoning: {len(inferred)}\n")
+    DeductiveClosure(OWLRL_Semantics).expand(reasoning_graph)
+    print(f"Triples after reasoning: {len(reasoning_graph)}")
 
-    print("Executing Query 5...")
-    execute(inferred, queries[4], RESULT_DIR / "query5.txt")
+    output_file = RESULTS_DIR / "query5.txt"
+    print("\nExecuting Query 5...")
+    execute_query(reasoning_graph, queries[4], output_file)
+    print(f"Saved: {output_file}")
 
     print("\n====================================")
     print("All queries executed successfully")

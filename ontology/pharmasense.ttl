@@ -69,6 +69,10 @@ pharma:DrugType
     rdfs:label "Drug Type" ;
     rdfs:comment "A classification describing the type of a drug, such as Biotech or Small Molecule." .
 
+#################################################################
+# Controlled Classification Individuals
+#################################################################
+
 pharma:BiotechType
     a pharma:DrugType ;
     rdfs:label "Biotech" ;

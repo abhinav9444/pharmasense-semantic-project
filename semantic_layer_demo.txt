@@ -1,0 +1,238 @@
+(.venv) PS C:\Users\abhinav.aq.singh\VS Code\pharmasense-semantic-layer-project> python .\semantic_layer.py
+============================================
+PharmaSense Semantic Layer
+Ollama + Gemma 3:4B
+============================================
+
+Knowledge graph: 4002 triples
+Ontology: 152 triples
+Validated queries: 5
+
+Sample demo output from the five validated questions.
+The SPARQL results are the grounded results returned by the PharmaSense graph.
+
+Demo 1
+Question: Which drugs share a protein target with Lepirudin?
+
+Intent: Query 1
+Confidence: 1.00
+Grounding: validated SPARQL -> PharmaSense graph
+
+SPARQL results:
+DB00006 | Bivalirudin | P00734 | F2 | Involved in blood clotting cascade
+
+Natural-language answer:
+DB00006 - Bivalirudin shares target P00734 (gene: F2, function: Involved in blood clotting cascade).
+
+--------------------------------------------
+
+Demo 2
+Question: Which pairs of drugs share more than 3 common pathways?
+
+Intent: Query 2
+Confidence: 1.00
+Grounding: validated SPARQL -> PharmaSense graph
+
+SPARQL results:
+DB00001 | Lepirudin | DB00006 | Bivalirudin | 34
+DB00001 | Lepirudin | DB00086 | Streptokinase | 34
+DB00006 | Bivalirudin | DB00086 | Streptokinase | 34
+DB00154 | gamma-Homolinolenic acid | DB00159 | Icosapent | 27
+DB00177 | Valsartan | DB00195 | Betaxolol | 22
+DB00001 | Lepirudin | DB00055 | Drotrecogin alfa | 21
+DB00001 | Lepirudin | DB00025 | Antihemophilic Factor | 21
+DB00001 | Lepirudin | DB00100 | Coagulation Factor IX | 21
+DB00001 | Lepirudin | DB00036 | Coagulation factor VIIa | 21
+DB00001 | Lepirudin | DB00009 | Alteplase | 21
+DB00001 | Lepirudin | DB00015 | Reteplase | 21
+DB00001 | Lepirudin | DB00029 | Anistreplase | 21
+DB00001 | Lepirudin | DB00031 | Tenecteplase | 21
+DB00001 | Lepirudin | DB00013 | Urokinase | 21
+DB00006 | Bivalirudin | DB00055 | Drotrecogin alfa | 21
+DB00006 | Bivalirudin | DB00025 | Antihemophilic Factor | 21
+DB00006 | Bivalirudin | DB00100 | Coagulation Factor IX | 21
+DB00006 | Bivalirudin | DB00036 | Coagulation factor VIIa | 21
+DB00006 | Bivalirudin | DB00009 | Alteplase | 21
+DB00006 | Bivalirudin | DB00015 | Reteplase | 21
+DB00006 | Bivalirudin | DB00029 | Anistreplase | 21
+DB00006 | Bivalirudin | DB00031 | Tenecteplase | 21
+DB00006 | Bivalirudin | DB00013 | Urokinase | 21
+DB00009 | Alteplase | DB00055 | Drotrecogin alfa | 21
+DB00009 | Alteplase | DB00025 | Antihemophilic Factor | 21
+DB00009 | Alteplase | DB00100 | Coagulation Factor IX | 21
+DB00009 | Alteplase | DB00036 | Coagulation factor VIIa | 21
+DB00009 | Alteplase | DB00015 | Reteplase | 21
+DB00009 | Alteplase | DB00029 | Anistreplase | 21
+DB00009 | Alteplase | DB00031 | Tenecteplase | 21
+DB00009 | Alteplase | DB00013 | Urokinase | 21
+DB00009 | Alteplase | DB00086 | Streptokinase | 21
+DB00013 | Urokinase | DB00055 | Drotrecogin alfa | 21
+DB00013 | Urokinase | DB00025 | Antihemophilic Factor | 21
+DB00013 | Urokinase | DB00100 | Coagulation Factor IX | 21
+DB00013 | Urokinase | DB00036 | Coagulation factor VIIa | 21
+DB00013 | Urokinase | DB00015 | Reteplase | 21
+DB00013 | Urokinase | DB00029 | Anistreplase | 21
+DB00013 | Urokinase | DB00031 | Tenecteplase | 21
+DB00013 | Urokinase | DB00086 | Streptokinase | 21
+DB00015 | Reteplase | DB00055 | Drotrecogin alfa | 21
+DB00015 | Reteplase | DB00025 | Antihemophilic Factor | 21
+DB00015 | Reteplase | DB00100 | Coagulation Factor IX | 21
+DB00015 | Reteplase | DB00036 | Coagulation factor VIIa | 21
+DB00015 | Reteplase | DB00029 | Anistreplase | 21
+DB00015 | Reteplase | DB00031 | Tenecteplase | 21
+DB00015 | Reteplase | DB00086 | Streptokinase | 21
+DB00029 | Anistreplase | DB00055 | Drotrecogin alfa | 21
+DB00029 | Anistreplase | DB00100 | Coagulation Factor IX | 21
+DB00029 | Anistreplase | DB00036 | Coagulation factor VIIa | 21
+DB00029 | Anistreplase | DB00031 | Tenecteplase | 21
+DB00029 | Anistreplase | DB00086 | Streptokinase | 21
+DB00031 | Tenecteplase | DB00055 | Drotrecogin alfa | 21
+DB00031 | Tenecteplase | DB00100 | Coagulation Factor IX | 21
+DB00031 | Tenecteplase | DB00036 | Coagulation factor VIIa | 21
+DB00031 | Tenecteplase | DB00086 | Streptokinase | 21
+DB00086 | Streptokinase | DB00100 | Coagulation Factor IX | 21
+DB00025 | Antihemophilic Factor | DB00055 | Drotrecogin alfa | 21
+DB00025 | Antihemophilic Factor | DB00100 | Coagulation Factor IX | 21
+DB00025 | Antihemophilic Factor | DB00036 | Coagulation factor VIIa | 21
+DB00025 | Antihemophilic Factor | DB00029 | Anistreplase | 21
+DB00025 | Antihemophilic Factor | DB00031 | Tenecteplase | 21
+DB00025 | Antihemophilic Factor | DB00086 | Streptokinase | 21
+DB00036 | Coagulation factor VIIa | DB00055 | Drotrecogin alfa | 21
+DB00036 | Coagulation factor VIIa | DB00100 | Coagulation Factor IX | 21
+DB00036 | Coagulation factor VIIa | DB00086 | Streptokinase | 21
+DB00055 | Drotrecogin alfa | DB00100 | Coagulation Factor IX | 21
+DB00055 | Drotrecogin alfa | DB00086 | Streptokinase | 21
+DB00187 | Esmolol | DB00195 | Betaxolol | 17
+DB00135 | L-Tyrosine | DB00190 | Carbidopa | 17
+DB00187 | Esmolol | DB00190 | Carbidopa | 15
+DB00135 | L-Tyrosine | DB00187 | Esmolol | 15
+DB00135 | L-Tyrosine | DB00195 | Betaxolol | 15
+DB00190 | Carbidopa | DB00195 | Betaxolol | 15
+DB00054 | Abciximab | DB00086 | Streptokinase | 13
+DB00054 | Abciximab | DB00063 | Eptifibatide | 13
+DB00054 | Abciximab | DB00154 | gamma-Homolinolenic acid | 13
+DB00054 | Abciximab | DB00159 | Icosapent | 13
+DB00063 | Eptifibatide | DB00086 | Streptokinase | 13
+DB00063 | Eptifibatide | DB00154 | gamma-Homolinolenic acid | 13
+DB00063 | Eptifibatide | DB00159 | Icosapent | 13
+DB00178 | Ramipril | DB00195 | Betaxolol | 13
+DB00001 | Lepirudin | DB00054 | Abciximab | 13
+DB00001 | Lepirudin | DB00063 | Eptifibatide | 13
+DB00001 | Lepirudin | DB00154 | gamma-Homolinolenic acid | 13
+DB00001 | Lepirudin | DB00159 | Icosapent | 13
+DB00006 | Bivalirudin | DB00054 | Abciximab | 13
+DB00006 | Bivalirudin | DB00063 | Eptifibatide | 13
+DB00006 | Bivalirudin | DB00154 | gamma-Homolinolenic acid | 13
+DB00006 | Bivalirudin | DB00159 | Icosapent | 13
+DB00086 | Streptokinase | DB00154 | gamma-Homolinolenic acid | 13
+DB00086 | Streptokinase | DB00159 | Icosapent | 13
+DB00177 | Valsartan | DB00178 | Ramipril | 13
+DB00132 | Alpha-Linolenic Acid | DB00204 | Dofetilide | 12
+DB00132 | Alpha-Linolenic Acid | DB00192 | Indecainide | 12
+DB00192 | Indecainide | DB00204 | Dofetilide | 12
+DB00042 | Botulinum Toxin Type B | DB00185 | Cevimeline | 10
+DB00042 | Botulinum Toxin Type B | DB00183 | Pentagastrin | 10
+DB00042 | Botulinum Toxin Type B | DB00083 | Botulinum Toxin Type A | 10
+DB00083 | Botulinum Toxin Type A | DB00185 | Cevimeline | 10
+DB00083 | Botulinum Toxin Type A | DB00183 | Pentagastrin | 10
+DB00183 | Pentagastrin | DB00185 | Cevimeline | 10
+DB00191 | Phentermine | DB00193 | Tramadol | 6
+DB00002 | Cetuximab | DB00061 | Pegademase bovine | 5
+DB00002 | Cetuximab | DB00072 | Trastuzumab | 5
+DB00061 | Pegademase bovine | DB00072 | Trastuzumab | 5
+DB00176 | Fluvoxamine | DB00191 | Phentermine | 5
+DB00176 | Fluvoxamine | DB00193 | Tramadol | 5
+DB00001 | Lepirudin | DB00170 | Menadione | 4
+DB00006 | Bivalirudin | DB00170 | Menadione | 4
+DB00009 | Alteplase | DB00170 | Menadione | 4
+DB00013 | Urokinase | DB00170 | Menadione | 4
+DB00015 | Reteplase | DB00170 | Menadione | 4
+DB00029 | Anistreplase | DB00170 | Menadione | 4
+DB00031 | Tenecteplase | DB00170 | Menadione | 4
+DB00086 | Streptokinase | DB00170 | Menadione | 4
+DB00025 | Antihemophilic Factor | DB00170 | Menadione | 4
+DB00036 | Coagulation factor VIIa | DB00170 | Menadione | 4
+DB00100 | Coagulation Factor IX | DB00170 | Menadione | 4
+DB00055 | Drotrecogin alfa | DB00170 | Menadione | 4
+
+Natural-language answer:
+The following pairs of drugs share more than 3 common pathways:
+
+*   Lepirudin
+*   Bivalirudin
+*   Streptokinase
+*   Abciximab
+*   Eptifibatide
+*   gamma-Homolinolenic acid
+*   Icosapent
+
+--------------------------------------------
+
+Demo 3
+Question: Which drugs mention thrombin in their mechanism but do not have a B01 ATC code?
+
+Intent: Query 3
+Confidence: 1.00
+Grounding: validated SPARQL -> PharmaSense graph
+
+SPARQL results:
+DB00163 | Vitamin E | A11HA03
+
+Natural-language answer:
+DB00163 - Vitamin E has ATC code A11HA03 and its mechanism mentions thrombin.
+
+--------------------------------------------
+
+Demo 4
+Question: Which drugs have bleeding-related toxicity and more than one drug category?
+
+Intent: Query 4
+Confidence: 1.00
+Grounding: validated SPARQL -> PharmaSense graph
+
+SPARQL results:
+DB00001 | Lepirudin | In case of overdose (eg, suggested by excessively high aPTT values) the risk of bleeding is increased. | 3 | 34
+
+Natural-language answer:
+DB00001 - Lepirudin has bleeding-related toxicity, 3 categories and 34 pathways.
+
+--------------------------------------------
+
+Demo 5
+Question: Which drugs are both BiotechDrug and AnticoagulantDrug?
+
+Intent: Query 5
+Confidence: 1.00
+Grounding: validated SPARQL -> PharmaSense graph
+
+SPARQL results:
+http://example.org/pharmasense#Drug_DB00054 | DB00054 | Abciximab
+http://example.org/pharmasense#Drug_DB00006 | DB00006 | Bivalirudin
+http://example.org/pharmasense#Drug_DB00063 | DB00063 | Eptifibatide
+http://example.org/pharmasense#Drug_DB00001 | DB00001 | Lepirudin
+
+Natural-language answer:
+The drugs inferred as both BiotechDrug and AnticoagulantDrug are Abciximab, Bivalirudin, Eptifibatide and Lepirudin.
+
+--------------------------------------------
+
+Interactive mode. Type 'exit' to quit.
+Question: Which drugs have an ATC code starting with B01?
+Intent: Custom query
+
+Generated SPARQL:
+PREFIX pharma: <http://example.org/pharmasense#>
+SELECT DISTINCT ?drugName
+WHERE {
+  ?drug a pharma:Drug .
+  ?drug pharma:atcCode ?atcCode .
+  FILTER regex(?atcCode, "^B01")
+  ?drug pharma:drugName ?drugName .
+}
+
+Results:
+Lepirudin
+Bivalirudin
+
+Natural-language result:
+Lepirudin, Bivalirudin

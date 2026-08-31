@@ -1,0 +1,120 @@
+DB00001 | Lepirudin | DB00006 | Bivalirudin | 34
+DB00001 | Lepirudin | DB00086 | Streptokinase | 34
+DB00006 | Bivalirudin | DB00086 | Streptokinase | 34
+DB00154 | gamma-Homolinolenic acid | DB00159 | Icosapent | 27
+DB00177 | Valsartan | DB00195 | Betaxolol | 22
+DB00001 | Lepirudin | DB00055 | Drotrecogin alfa | 21
+DB00001 | Lepirudin | DB00025 | Antihemophilic Factor | 21
+DB00001 | Lepirudin | DB00100 | Coagulation Factor IX | 21
+DB00001 | Lepirudin | DB00036 | Coagulation factor VIIa | 21
+DB00001 | Lepirudin | DB00009 | Alteplase | 21
+DB00001 | Lepirudin | DB00015 | Reteplase | 21
+DB00001 | Lepirudin | DB00029 | Anistreplase | 21
+DB00001 | Lepirudin | DB00031 | Tenecteplase | 21
+DB00001 | Lepirudin | DB00013 | Urokinase | 21
+DB00006 | Bivalirudin | DB00055 | Drotrecogin alfa | 21
+DB00006 | Bivalirudin | DB00025 | Antihemophilic Factor | 21
+DB00006 | Bivalirudin | DB00100 | Coagulation Factor IX | 21
+DB00006 | Bivalirudin | DB00036 | Coagulation factor VIIa | 21
+DB00006 | Bivalirudin | DB00009 | Alteplase | 21
+DB00006 | Bivalirudin | DB00015 | Reteplase | 21
+DB00006 | Bivalirudin | DB00029 | Anistreplase | 21
+DB00006 | Bivalirudin | DB00031 | Tenecteplase | 21
+DB00006 | Bivalirudin | DB00013 | Urokinase | 21
+DB00009 | Alteplase | DB00055 | Drotrecogin alfa | 21
+DB00009 | Alteplase | DB00025 | Antihemophilic Factor | 21
+DB00009 | Alteplase | DB00100 | Coagulation Factor IX | 21
+DB00009 | Alteplase | DB00036 | Coagulation factor VIIa | 21
+DB00009 | Alteplase | DB00015 | Reteplase | 21
+DB00009 | Alteplase | DB00029 | Anistreplase | 21
+DB00009 | Alteplase | DB00031 | Tenecteplase | 21
+DB00009 | Alteplase | DB00013 | Urokinase | 21
+DB00009 | Alteplase | DB00086 | Streptokinase | 21
+DB00013 | Urokinase | DB00055 | Drotrecogin alfa | 21
+DB00013 | Urokinase | DB00025 | Antihemophilic Factor | 21
+DB00013 | Urokinase | DB00100 | Coagulation Factor IX | 21
+DB00013 | Urokinase | DB00036 | Coagulation factor VIIa | 21
+DB00013 | Urokinase | DB00015 | Reteplase | 21
+DB00013 | Urokinase | DB00029 | Anistreplase | 21
+DB00013 | Urokinase | DB00031 | Tenecteplase | 21
+DB00013 | Urokinase | DB00086 | Streptokinase | 21
+DB00015 | Reteplase | DB00055 | Drotrecogin alfa | 21
+DB00015 | Reteplase | DB00025 | Antihemophilic Factor | 21
+DB00015 | Reteplase | DB00100 | Coagulation Factor IX | 21
+DB00015 | Reteplase | DB00036 | Coagulation factor VIIa | 21
+DB00015 | Reteplase | DB00029 | Anistreplase | 21
+DB00015 | Reteplase | DB00031 | Tenecteplase | 21
+DB00015 | Reteplase | DB00086 | Streptokinase | 21
+DB00029 | Anistreplase | DB00055 | Drotrecogin alfa | 21
+DB00029 | Anistreplase | DB00100 | Coagulation Factor IX | 21
+DB00029 | Anistreplase | DB00036 | Coagulation factor VIIa | 21
+DB00029 | Anistreplase | DB00031 | Tenecteplase | 21
+DB00029 | Anistreplase | DB00086 | Streptokinase | 21
+DB00031 | Tenecteplase | DB00055 | Drotrecogin alfa | 21
+DB00031 | Tenecteplase | DB00100 | Coagulation Factor IX | 21
+DB00031 | Tenecteplase | DB00036 | Coagulation factor VIIa | 21
+DB00031 | Tenecteplase | DB00086 | Streptokinase | 21
+DB00086 | Streptokinase | DB00100 | Coagulation Factor IX | 21
+DB00025 | Antihemophilic Factor | DB00055 | Drotrecogin alfa | 21
+DB00025 | Antihemophilic Factor | DB00100 | Coagulation Factor IX | 21
+DB00025 | Antihemophilic Factor | DB00036 | Coagulation factor VIIa | 21
+DB00025 | Antihemophilic Factor | DB00029 | Anistreplase | 21
+DB00025 | Antihemophilic Factor | DB00031 | Tenecteplase | 21
+DB00025 | Antihemophilic Factor | DB00086 | Streptokinase | 21
+DB00036 | Coagulation factor VIIa | DB00055 | Drotrecogin alfa | 21
+DB00036 | Coagulation factor VIIa | DB00100 | Coagulation Factor IX | 21
+DB00036 | Coagulation factor VIIa | DB00086 | Streptokinase | 21
+DB00055 | Drotrecogin alfa | DB00100 | Coagulation Factor IX | 21
+DB00055 | Drotrecogin alfa | DB00086 | Streptokinase | 21
+DB00187 | Esmolol | DB00195 | Betaxolol | 17
+DB00135 | L-Tyrosine | DB00190 | Carbidopa | 17
+DB00187 | Esmolol | DB00190 | Carbidopa | 15
+DB00135 | L-Tyrosine | DB00187 | Esmolol | 15
+DB00135 | L-Tyrosine | DB00195 | Betaxolol | 15
+DB00190 | Carbidopa | DB00195 | Betaxolol | 15
+DB00054 | Abciximab | DB00086 | Streptokinase | 13
+DB00054 | Abciximab | DB00063 | Eptifibatide | 13
+DB00054 | Abciximab | DB00154 | gamma-Homolinolenic acid | 13
+DB00054 | Abciximab | DB00159 | Icosapent | 13
+DB00063 | Eptifibatide | DB00086 | Streptokinase | 13
+DB00063 | Eptifibatide | DB00154 | gamma-Homolinolenic acid | 13
+DB00063 | Eptifibatide | DB00159 | Icosapent | 13
+DB00178 | Ramipril | DB00195 | Betaxolol | 13
+DB00001 | Lepirudin | DB00054 | Abciximab | 13
+DB00001 | Lepirudin | DB00063 | Eptifibatide | 13
+DB00001 | Lepirudin | DB00154 | gamma-Homolinolenic acid | 13
+DB00001 | Lepirudin | DB00159 | Icosapent | 13
+DB00006 | Bivalirudin | DB00054 | Abciximab | 13
+DB00006 | Bivalirudin | DB00063 | Eptifibatide | 13
+DB00006 | Bivalirudin | DB00154 | gamma-Homolinolenic acid | 13
+DB00006 | Bivalirudin | DB00159 | Icosapent | 13
+DB00086 | Streptokinase | DB00154 | gamma-Homolinolenic acid | 13
+DB00086 | Streptokinase | DB00159 | Icosapent | 13
+DB00177 | Valsartan | DB00178 | Ramipril | 13
+DB00132 | Alpha-Linolenic Acid | DB00204 | Dofetilide | 12
+DB00132 | Alpha-Linolenic Acid | DB00192 | Indecainide | 12
+DB00192 | Indecainide | DB00204 | Dofetilide | 12
+DB00042 | Botulinum Toxin Type B | DB00185 | Cevimeline | 10
+DB00042 | Botulinum Toxin Type B | DB00183 | Pentagastrin | 10
+DB00042 | Botulinum Toxin Type B | DB00083 | Botulinum Toxin Type A | 10
+DB00083 | Botulinum Toxin Type A | DB00185 | Cevimeline | 10
+DB00083 | Botulinum Toxin Type A | DB00183 | Pentagastrin | 10
+DB00183 | Pentagastrin | DB00185 | Cevimeline | 10
+DB00191 | Phentermine | DB00193 | Tramadol | 6
+DB00002 | Cetuximab | DB00061 | Pegademase bovine | 5
+DB00002 | Cetuximab | DB00072 | Trastuzumab | 5
+DB00061 | Pegademase bovine | DB00072 | Trastuzumab | 5
+DB00176 | Fluvoxamine | DB00191 | Phentermine | 5
+DB00176 | Fluvoxamine | DB00193 | Tramadol | 5
+DB00001 | Lepirudin | DB00170 | Menadione | 4
+DB00006 | Bivalirudin | DB00170 | Menadione | 4
+DB00009 | Alteplase | DB00170 | Menadione | 4
+DB00013 | Urokinase | DB00170 | Menadione | 4
+DB00015 | Reteplase | DB00170 | Menadione | 4
+DB00029 | Anistreplase | DB00170 | Menadione | 4
+DB00031 | Tenecteplase | DB00170 | Menadione | 4
+DB00086 | Streptokinase | DB00170 | Menadione | 4
+DB00025 | Antihemophilic Factor | DB00170 | Menadione | 4
+DB00036 | Coagulation factor VIIa | DB00170 | Menadione | 4
+DB00100 | Coagulation Factor IX | DB00170 | Menadione | 4
+DB00055 | Drotrecogin alfa | DB00170 | Menadione | 4
