@@ -49,6 +49,8 @@ SPARQL Queries
 OWL-RL reasoning for Query 5
    ↓
 Semantic Layer
+   ↓
+Grounded Answer
 ```
 
 ## What was done
@@ -84,6 +86,20 @@ Question → Gemma → SPARQL → RDF graph → results → natural-language ans
 ```
 
 The generated SPARQL and actual results are shown for custom questions. A sample run is stored in `semantic_layer_demo.txt`.
+
+### Knowledge Graph Visualization
+
+The generated RDF knowledge graph can be visualized as an interactive network graph using Python libraries such as RDFLib and PyVis.
+
+The visualization represents:
+
+- Drugs as graph nodes
+- Protein targets as graph nodes
+- Pathways as graph nodes
+- Categories and drug types as graph nodes
+- RDF properties such as `hasTarget`, `hasCategory`, `hasDrugType` and `participatesInPathway` as directed edges
+
+This provides a visual way to inspect how drugs, targets, pathways and classifications are connected in the PharmaSense knowledge graph.
 
 ## Main problems and fixes
 
