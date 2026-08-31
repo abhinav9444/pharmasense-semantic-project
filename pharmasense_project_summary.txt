@@ -1,0 +1,83 @@
+PHARMASENSE — PROJECT SUMMARY
+abhinav.aq.singh
+______________________________
+
+Objective
+Convert 200 DrugBank Lite records from TogoDB into an OWL ontology, RDF knowledge graph and SPARQL-based semantic layer enabled with SLM query support.
+
+1. Data Collection
+- Scraped DrugBank Lite IDs 1–200.
+- Stored source fields in structured JSON.
+- Added cleaning and retry handling.
+
+2. Data Model
+Modeled:
+Drug → Protein Target
+Drug → Pathway
+Drug → Drug Category
+Drug → Drug Type
+Drug → ATC Classification
+
+This enabled relationship-based SPARQL queries.
+
+3. OWL Ontology
+Created `ontology/pharmasense.ttl` with the required classes, properties, domain/range, labels/comments, inverse properties, a transitive property and OWL restrictions for inference.
+
+4. RDF Knowledge Graph
+Converted JSON to RDF/Turtle using RDFLib.
+Current graph: ~4,000 triples from 200 drug records.
+
+5. SPARQL
+Implemented the five required queries:
+1. Drugs sharing a protein target with Lepirudin
+2. Drug pairs sharing more than 3 pathways
+3. Thrombin mechanism with non-B01 ATC code
+4. Bleeding toxicity with more than one category
+5. Drugs inferred as both BiotechDrug and AnticoagulantDrug
+
+Results are stored in `query_results/`.
+
+6. Semantic Layer
+`semantic_layer.py` accepts natural-language questions.
+- Five assignment questions use validated SPARQL directly.
+- Other questions use local Gemma 3 4B through Ollama to generate SPARQL.
+- Only read-only SELECT/ASK queries are allowed.
+- Shows query path, actual graph results and grounded natural-language answers.
+
+Challenges Faced
+1. RDF cleaning
+Problem: Source values contained HTML, special characters and inconsistent text.
+Fix: Added cleaning and URI normalization.
+
+2. OWL inference
+Problem: BiotechDrug and AnticoagulantDrug were not initially inferred.
+Fix: Added OWL equivalent-class restrictions and verified with OWL-RL.
+
+3. SPARQL prefix handling
+Problem: Prefixes were lost when loading individual queries.
+Fix: Preserved namespace prefixes during query loading.
+
+4. Query 2 became empty after graph reduction
+Problem: Relevant pathway relationships were removed.
+Fix: Preserved all needed pathway IDs and target-associated pathways.
+
+5. Wrong classification of custom questions
+Problem: An unrelated question could be mapped to one of the five fixed queries.
+Fix: Added direct matching for the five validated questions; other questions use the custom path.
+
+6. Gemma query formatting
+Problem: Gemma sometimes returned explanation instead of a clean SPARQL query.
+Fix: Added query extraction and retry logic.
+
+Validation
+- Ontology parsed successfully with RDFLib.
+- Graph checked with `verify_graph.py`.
+- OWL reasoning verified with `test_reasoning.py`.
+- All five SPARQL queries executed successfully.
+- Semantic-layer demo saved in `semantic_layer_demo.txt`.
+
+Final Flow
+TogoDB → Scraper → JSON → OWL Ontology → RDF Graph → SPARQL → OWL-RL Reasoning → Semantic Layer → Grounded Answer
+
+Key Learning
+The main learning was how to represent domain relationships explicitly in RDF/OWL so the data can be queried and reasoned over instead of being treated only as raw fields.
