@@ -209,6 +209,19 @@ Semantic Layer
   ↓
 Grounded Answer
 
+Knowledge Graph Visualization (Extras)
+--------------------------------------
+The generated RDF knowledge graph can also be visualized as an interactive network graph using Python libraries such as RDFLib and PyVis.
+
+The visualization represents:
+- Drugs as graph nodes
+- Protein targets as graph nodes
+- Pathways as graph nodes
+- Categories and drug types as graph nodes
+- RDF properties such as `hasTarget`, `hasCategory`, `hasDrugType` and `participatesInPathway` as directed edges.
+
+This provides a visual way to inspect how drugs, targets, pathways and classifications are connected in the PharmaSense knowledge graph.
+
 MAIN LEARNING
 -------------
 The main thing I learned from this project is that a good knowledge graph is mainly about correct modelling.
