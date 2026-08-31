@@ -1,4 +1,4 @@
-(.venv) PS C:\Users\abhinav.aq.singh\VS Code\pharmasense-semantic-layer-project> python .\semantic_layer.py
+(.venv) PS C:\Users\abhinav.aq.singh\VS Code\pharmasense-semantic-project> python .\semantic_layer.py
 ============================================
 PharmaSense Semantic Layer
 Ollama + Gemma 3:4B
