@@ -1,0 +1,7 @@
+digraph PharmaSense {
+	A [label=Aspirin]
+	B [label="COX-1"]
+	C [label=Pain]
+	A -> B [label=targets]
+	A -> C [label=treats]
+}
