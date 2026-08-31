@@ -1,0 +1,3 @@
+rdflib
+owlrl
+requests
