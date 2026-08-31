@@ -1,0 +1,258 @@
+@prefix pharma: <http://example.org/pharmasense#> .
+@prefix rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:    <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:    <http://www.w3.org/2001/XMLSchema#> .
+
+#################################################################
+# Ontology
+#################################################################
+
+pharma:PharmaSenseOntology
+    a owl:Ontology ;
+    rdfs:label "PharmaSense Drug Knowledge Graph Ontology" ;
+    rdfs:comment "OWL ontology for representing DrugBank Lite pharmaceutical knowledge." .
+
+#################################################################
+# Classes
+#################################################################
+
+pharma:Drug
+    a owl:Class ;
+    rdfs:label "Drug" ;
+    rdfs:comment "A pharmaceutical or therapeutic substance represented in the DrugBank Lite dataset." .
+
+pharma:BiotechDrug
+    a owl:Class ;
+    rdfs:label "Biotech Drug" ;
+    rdfs:comment "A drug classified as a biotechnology-derived drug." ;
+    rdfs:subClassOf pharma:Drug .
+
+pharma:SmallMoleculeDrug
+    a owl:Class ;
+    rdfs:label "Small Molecule Drug" ;
+    rdfs:comment "A drug classified as a small-molecule drug." ;
+    rdfs:subClassOf pharma:Drug .
+
+pharma:AnticoagulantDrug
+    a owl:Class ;
+    rdfs:label "Anticoagulant Drug" ;
+    rdfs:comment "A drug classified as an anticoagulant." ;
+    rdfs:subClassOf pharma:Drug .
+
+pharma:ProteinTarget
+    a owl:Class ;
+    rdfs:label "Protein Target" ;
+    rdfs:comment "A protein that is reported as a target of a drug." .
+
+pharma:Pathway
+    a owl:Class ;
+    rdfs:label "Pathway" ;
+    rdfs:comment "A biological or drug-associated pathway represented in the source data." .
+
+pharma:DrugCategory
+    a owl:Class ;
+    rdfs:label "Drug Category" ;
+    rdfs:comment "A therapeutic or pharmacological category assigned to a drug." .
+
+pharma:ATCClassification
+    a owl:Class ;
+    rdfs:label "ATC Classification" ;
+    rdfs:comment "An Anatomical Therapeutic Chemical classification associated with a drug." .
+
+#################################################################
+# Supporting Classification Class
+#################################################################
+
+pharma:DrugType
+    a owl:Class ;
+    rdfs:label "Drug Type" ;
+    rdfs:comment "A classification describing the type of a drug, such as Biotech or Small Molecule." .
+
+pharma:BiotechType
+    a pharma:DrugType ;
+    rdfs:label "Biotech" ;
+    rdfs:comment "Classification value indicating that a drug is biotechnology-derived." .
+
+pharma:SmallMoleculeType
+    a pharma:DrugType ;
+    rdfs:label "Small Molecule" ;
+    rdfs:comment "Classification value indicating that a drug is a small molecule." .
+
+pharma:Anticoagulants
+    a pharma:DrugCategory ;
+    rdfs:label "Anticoagulants" ;
+    rdfs:comment "Drug category identifying anticoagulant agents." .
+
+#################################################################
+# Object Properties
+#################################################################
+
+pharma:hasTarget
+    a owl:ObjectProperty ;
+    rdfs:label "has target" ;
+    rdfs:comment "Relates a drug to a protein target on which it acts." ;
+    rdfs:domain pharma:Drug ;
+    rdfs:range pharma:ProteinTarget ;
+    owl:inverseOf pharma:targetOf .
+
+pharma:targetOf
+    a owl:ObjectProperty ;
+    rdfs:label "target of" ;
+    rdfs:comment "Relates a protein target to a drug that acts on it." ;
+    rdfs:domain pharma:ProteinTarget ;
+    rdfs:range pharma:Drug .
+
+pharma:participatesInPathway
+    a owl:ObjectProperty ;
+    rdfs:label "participates in pathway" ;
+    rdfs:comment "Relates a drug to a pathway in which the drug is represented as participating." ;
+    rdfs:domain pharma:Drug ;
+    rdfs:range pharma:Pathway ;
+    owl:inverseOf pharma:hasParticipant .
+
+pharma:hasParticipant
+    a owl:ObjectProperty ;
+    rdfs:label "has participant" ;
+    rdfs:comment "Relates a pathway to a drug represented as a participant." ;
+    rdfs:domain pharma:Pathway ;
+    rdfs:range pharma:Drug .
+
+pharma:hasCategory
+    a owl:ObjectProperty ;
+    rdfs:label "has category" ;
+    rdfs:comment "Relates a drug to one of its drug categories." ;
+    rdfs:domain pharma:Drug ;
+    rdfs:range pharma:DrugCategory .
+
+pharma:hasATCClassification
+    a owl:ObjectProperty ;
+    rdfs:label "has ATC classification" ;
+    rdfs:comment "Relates a drug to an ATC classification resource." ;
+    rdfs:domain pharma:Drug ;
+    rdfs:range pharma:ATCClassification .
+
+pharma:hasDrugType
+    a owl:ObjectProperty ;
+    rdfs:label "has drug type" ;
+    rdfs:comment "Relates a drug to a controlled drug-type classification." ;
+    rdfs:domain pharma:Drug ;
+    rdfs:range pharma:DrugType .
+
+pharma:associatedWithPathway
+    a owl:ObjectProperty ;
+    rdfs:label "associated with pathway" ;
+    rdfs:comment "Relates a protein target to a pathway associated with that target." ;
+    rdfs:domain pharma:ProteinTarget ;
+    rdfs:range pharma:Pathway .
+
+pharma:metabolizedBy
+    a owl:ObjectProperty ;
+    rdfs:label "metabolized by" ;
+    rdfs:comment "Relates a drug to an entity involved in its metabolism." ;
+    rdfs:domain pharma:Drug ;
+    rdfs:range pharma:ProteinTarget .
+
+#################################################################
+# Transitive Property
+#################################################################
+
+pharma:subCategoryOf
+    a owl:ObjectProperty ,
+      owl:TransitiveProperty ;
+    rdfs:label "sub-category of" ;
+    rdfs:comment "Relates a drug category to a broader category. This property is transitive because if A is a sub-category of B and B is a sub-category of C, A is also a sub-category of C." ;
+    rdfs:domain pharma:DrugCategory ;
+    rdfs:range pharma:DrugCategory .
+
+#################################################################
+# Datatype Properties
+#################################################################
+
+pharma:drugBankId
+    a owl:DatatypeProperty ;
+    rdfs:label "DrugBank ID" ;
+    rdfs:comment "The DrugBank accession identifier of a drug." ;
+    rdfs:domain pharma:Drug ;
+    rdfs:range xsd:string .
+
+pharma:drugName
+    a owl:DatatypeProperty ;
+    rdfs:label "Drug name" ;
+    rdfs:comment "The generic name of the drug." ;
+    rdfs:domain pharma:Drug ;
+    rdfs:range xsd:string .
+
+pharma:description
+    a owl:DatatypeProperty ;
+    rdfs:label "Description" ;
+    rdfs:comment "A textual description of the drug." ;
+    rdfs:domain pharma:Drug ;
+    rdfs:range xsd:string .
+
+pharma:mechanismOfAction
+    a owl:DatatypeProperty ;
+    rdfs:label "Mechanism of action" ;
+    rdfs:comment "A textual description of how the drug produces its biological effect." ;
+    rdfs:domain pharma:Drug ;
+    rdfs:range xsd:string .
+
+pharma:toxicity
+    a owl:DatatypeProperty ;
+    rdfs:label "Toxicity" ;
+    rdfs:comment "A textual description of reported toxicity information." ;
+    rdfs:domain pharma:Drug ;
+    rdfs:range xsd:string .
+
+pharma:atcCode
+    a owl:DatatypeProperty ;
+    rdfs:label "ATC code" ;
+    rdfs:comment "The Anatomical Therapeutic Chemical code assigned to the drug." ;
+    rdfs:domain pharma:Drug ;
+    rdfs:range xsd:string .
+
+pharma:geneName
+    a owl:DatatypeProperty ;
+    rdfs:label "Gene name" ;
+    rdfs:comment "The gene associated with a protein target." ;
+    rdfs:domain pharma:ProteinTarget ;
+    rdfs:range xsd:string .
+
+pharma:generalFunction
+    a owl:DatatypeProperty ;
+    rdfs:label "General function" ;
+    rdfs:comment "General biological function of a protein target." ;
+    rdfs:domain pharma:ProteinTarget ;
+    rdfs:range xsd:string .
+
+pharma:specificFunction
+    a owl:DatatypeProperty ;
+    rdfs:label "Specific function" ;
+    rdfs:comment "Specific biological function of a protein target." ;
+    rdfs:domain pharma:ProteinTarget ;
+    rdfs:range xsd:string .
+
+#################################################################
+# OWL Inference Definitions
+#################################################################
+
+pharma:BiotechDrug
+    owl:equivalentClass [
+        a owl:Restriction ;
+        owl:onProperty pharma:hasDrugType ;
+        owl:hasValue pharma:BiotechType
+    ] .
+
+pharma:SmallMoleculeDrug
+    owl:equivalentClass [
+        a owl:Restriction ;
+        owl:onProperty pharma:hasDrugType ;
+        owl:hasValue pharma:SmallMoleculeType
+    ] .
+
+pharma:AnticoagulantDrug
+    owl:equivalentClass [
+        a owl:Restriction ;
+        owl:onProperty pharma:hasCategory ;
+        owl:hasValue pharma:Anticoagulants
+    ] .
