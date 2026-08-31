@@ -1,23 +1,24 @@
 PHARMASENSE — PROJECT SUMMARY
-abhinav.aq.singh
-______________________________
 
-Objective
---------
-Convert 200 DrugBank Lite records from TogoDB into a structured OWL ontology, RDF/Turtle knowledge graph and SPARQL query layer, with a semantic layer for natural-language access.
+WHAT I STARTED WITH
+-------------------
+I was given a flat DrugBank Lite export from TogoDB and the requirement was to convert it into a proper OWL ontology, RDF knowledge graph and SPARQL query layer.
 
-Approach and Reasoning
-----------------------
-I focused on correctness of the data model rather than simply increasing graph size.
+I first understood how the source data was structured instead of directly writing RDF. The data had useful relationships between drugs, targets, pathways, categories and classifications, so I decided to model those relationships explicitly.
 
-1. Data understanding and extraction
-- Studied the TogoDB DrugBank Lite structure first.
-- Identified useful fields and relationships instead of treating the export as flat text.
-- Scraped IDs 1–200 and stored the source data in JSON.
-- Added cleaning and retry handling because source values contained HTML, special characters and missing-value text.
+STEP 1 — DATA COLLECTION
+------------------------
+I scraped DrugBank Lite IDs 1–200 from TogoDB and stored the records in JSON.
 
-2. RDF/OWL modelling
-I modeled the domain around the relationships needed for the assignment:
+I kept the scraper simple and added basic cleaning/retry handling because the source contained HTML, special characters and missing values.
+
+Result: 200 drug records in structured JSON.
+
+STEP 2 — HOW I MODELED THE RDF
+------------------------------
+I did not want to store everything as plain text.
+
+Main entities:
 - Drug
 - ProteinTarget
 - Pathway
@@ -25,7 +26,7 @@ I modeled the domain around the relationships needed for the assignment:
 - DrugType
 - ATCClassification
 
-Important relationships:
+Main relationships:
 Drug → hasTarget → ProteinTarget
 Drug → participatesInPathway → Pathway
 Drug → hasCategory → DrugCategory
@@ -33,143 +34,187 @@ Drug → hasDrugType → DrugType
 Drug → hasATCClassification → ATCClassification
 ProteinTarget → associatedWithPathway → Pathway
 
-I chose separate RDF resources for entities such as targets and pathways because this allows relationship-based queries and inference instead of keeping everything as plain text.
+I used separate RDF resources for targets and pathways because this allows SPARQL to follow relationships between entities instead of only searching text fields.
 
-3. OWL modelling decisions
-- Added rdfs:label/rdfs:comment for readability.
-- Added domain/range restrictions to make relationships explicit.
-- Added inverse properties where they were semantically valid.
-- Added a transitive category property.
-- Added OWL equivalent-class restrictions for BiotechDrug and AnticoagulantDrug.
+STEP 3 — OWL ONTOLOGY
+---------------------
+I created `ontology/pharmasense.ttl`.
 
-The inference design was deliberate:
+I added:
+- OWL classes and properties
+- Domain and range
+- rdfs:label and rdfs:comment
+- Inverse properties
+- A transitive property
+- OWL restrictions for inference
+
+For inference:
 hasDrugType → BiotechType ⇒ BiotechDrug
 hasCategory → Anticoagulants ⇒ AnticoagulantDrug
 
-4. RDF/Turtle generation
-Used RDFLib to transform JSON into RDF triples and serialize the graph as Turtle.
+The aim was to make the ontology define the meaning of the data, not just define names.
 
-The graph was kept reasonably compact while retaining the relationships required by the five research queries. The goal was not maximum scale; it was enough accurate information to support the required semantics.
+STEP 4 — JSON TO RDF/TURTLE
+---------------------------
+I used RDFLib to convert the JSON records into RDF triples and serialize them as Turtle.
 
-5. SPARQL modelling
-I wrote the five required queries directly against the RDF model.
+I kept the graph reasonably small and focused on relationships required by the assignment.
 
-The queries were designed from the research questions backwards:
-- Identify the entities required in the question.
-- Identify the RDF relationships needed to connect them.
-- Return only relevant result columns.
-- Test each query separately against the graph.
+Current graph: about 4,000 triples from 200 records.
 
-6. Accuracy and validation
-Validation was done at multiple levels:
-- Ontology parsing with RDFLib.
-- RDF graph inspection with `verify_graph.py`.
-- OWL-RL reasoning test with `test_reasoning.py`.
-- Execution of all five SPARQL queries with stored result files.
-- Semantic-layer testing using the same graph and validated queries.
+The focus was accuracy and useful relationships, not maximum scale.
 
-Challenges / Failure Paths
---------------------------
-1. Data cleaning
+STEP 5 — SPARQL
+---------------
+I designed the five SPARQL queries from the actual research questions.
+
+For each query I identified:
+1. What the question is asking.
+2. Which RDF entities are involved.
+3. Which relationships connect them.
+4. Which result columns are actually useful.
+
+The five queries are:
+1. Shared protein target with Lepirudin
+2. Drug pairs sharing more than 3 pathways
+3. Thrombin mechanism with non-B01 ATC code
+4. Bleeding toxicity with more than one category
+5. Drugs inferred as both BiotechDrug and AnticoagulantDrug
+
+Each query was tested separately and the outputs were stored in `query_results/`.
+
+CHALLENGES I FACED
+------------------
+
+1. RDF DATA CLEANING
 Problem:
-Raw values contained HTML, punctuation and inconsistent missing-value strings.
+Source values contained HTML, special characters and inconsistent missing-value text.
 
 Fix:
-Added cleaning and URI-normalization before RDF generation.
+Added cleaning and URI normalization before creating RDF resources.
 
-2. OWL inference failed initially
+2. OWL REASONING FAILED INITIALLY
 Problem:
-The expected BiotechDrug and AnticoagulantDrug types were not inferred.
+BiotechDrug and AnticoagulantDrug were not being inferred.
 
-Investigation:
-The explicit `hasDrugType` and `hasCategory` facts existed, but the ontology did not yet contain the required equivalence restrictions.
+What I checked:
+The explicit `hasDrugType` and `hasCategory` facts existed, but the ontology did not yet define the required equivalence restrictions.
 
 Fix:
 Added OWL restrictions and verified the result again with OWL-RL.
 
-3. SPARQL prefix/query-loading error
+3. SPARQL PREFIX ERROR
 Problem:
-When queries were split from `queries.sparql`, namespace prefixes were lost and Query 5 failed with an unknown `pharma` prefix.
+When the five queries were loaded separately, the `pharma` prefix was lost and Query 5 failed.
 
 Fix:
-Preserved the required PREFIX declarations while loading each query.
+Preserved the PREFIX declarations while loading the queries.
 
-4. Query 2 became empty after reducing the graph
+4. QUERY 2 RETURNED NO RESULTS AFTER REDUCTION
 Problem:
-The graph had been reduced too aggressively and important pathway relationships were lost.
+The graph had been reduced too aggressively and important pathway relationships were removed.
 
-Approach:
-I checked the RDF rather than adding artificial triples. The diagnosis showed that target-associated pathway information was needed.
+What I did:
+Checked the RDF instead of adding artificial triples.
 
 Fix:
-Retained all relevant pathway IDs from the source and modeled:
+Retained the required source pathway information and modeled:
 Drug → hasTarget → ProteinTarget → associatedWithPathway → Pathway
 
-This restored genuine shared-pathway results.
+Result:
+Query 2 produced genuine shared-pathway results.
 
-5. Query 1 returned irrelevant empty rows
+5. QUERY 1 RETURNED IRRELEVANT ROWS
 Problem:
-The initial query allowed unrelated drugs with missing target values to appear.
+The first version allowed unrelated drugs with empty target values to appear.
 
 Fix:
-Made the target, gene and function relationships mandatory so only genuine shared-target results are returned.
+Made target, gene and function relationships mandatory so only genuine shared-target matches are returned.
 
-6. Semantic-layer classification issue
+6. SEMANTIC LAYER CLASSIFICATION ISSUE
 Problem:
-A custom question such as an ATC-code question was incorrectly classified as one of the five fixed queries.
+A custom ATC question was incorrectly treated as one of the five fixed queries.
 
 Fix:
-Used direct matching for the five validated assignment questions. Other questions now go through the custom SPARQL-generation path.
+Used direct matching for the five validated assignment questions. Other questions use the custom-query path.
 
-7. Local model sometimes returned explanation instead of SPARQL
+7. GEMMA DID NOT ALWAYS RETURN CLEAN SPARQL
 Problem:
-Gemma could return extra text instead of a clean SELECT/ASK query.
+Gemma sometimes returned explanation or extra text instead of a query.
 
 Fix:
-Added query extraction and retry logic, then validated that only read-only SELECT/ASK queries are executed.
+Added query extraction/retry logic and restricted execution to read-only SELECT/ASK queries.
 
-Why These Choices
------------------
-The main design principle was accuracy first.
+WHY I CHOSE THIS APPROACH
+-------------------------
+My main focus was accuracy rather than scale.
 
 I avoided:
-- inventing triples just to make a query return results,
-- keeping unnecessary fields when they were not needed by the assignment,
-- making the graph large just for scale,
-- using an LLM to rewrite already validated queries.
+- adding fake triples just to make a query return results
+- keeping unnecessary relationships only to increase triple count
+- using the LLM to rewrite queries that were already validated
+- making the graph larger without a clear modelling/query reason
 
-The five assignment queries use validated SPARQL directly. The local Gemma model is used only for understanding custom questions and generating additional read-only SPARQL when required.
+The five assignment questions use validated SPARQL directly.
 
-Current Result
+For other questions, local Gemma is used only for natural-language understanding and custom SPARQL generation.
+
+VALIDATION I DID
+----------------
+I separated validation into small steps so failures could be traced to the correct layer.
+
+`validate_ontology.py`
+→ checks that the ontology parses.
+
+`verify_graph.py`
+→ checks the generated RDF graph and important relationships.
+
+`test_reasoning.py`
+→ checks OWL inference.
+
+`run_all_queries.py`
+→ executes all five SPARQL queries and stores their results.
+
+`semantic_layer.py`
+→ checks the natural-language → SPARQL → RDF result flow.
+
+CURRENT RESULT
 --------------
-- 200 scraped DrugBank Lite records
+- 200 DrugBank Lite records
 - Valid OWL ontology
 - RDF/Turtle knowledge graph
 - 5 validated SPARQL queries
-- OWL-RL inference for the required reasoning test
+- OWL-RL inference
 - Natural-language semantic layer
-- Stored query and semantic-layer outputs for verification
+- Custom read-only SPARQL generation using local Gemma
+- Stored query outputs and semantic-layer demo output
 
-Final Flow
+FINAL FLOW
 ----------
 TogoDB
   ↓
 Scraper
   ↓
-Structured JSON
+JSON
   ↓
-OWL ontology design
+OWL Ontology
   ↓
-JSON → RDF/Turtle
+RDF/Turtle Knowledge Graph
   ↓
-SPARQL validation
+SPARQL
   ↓
-OWL-RL reasoning
+OWL-RL Reasoning
   ↓
-Semantic layer
+Semantic Layer
   ↓
-Grounded answer
+Grounded Answer
 
-Main Learning I felt...
-----------------------
-The most important learning was that building a knowledge graph is mainly a modelling problem, not a scale problem. The quality of the ontology, relationships, identifiers and query design determines whether the final SPARQL results are accurate and meaningful.
+MAIN LEARNING
+-------------
+The main thing I learned from this project is that a good knowledge graph is mainly about correct modelling.
+
+The number of triples is not the main goal.
+
+The important part is choosing the right entities, defining meaningful relationships, keeping identifiers consistent, writing queries that match the model, validating each stage, and checking failures instead of hiding them.
+
+That was the approach I followed while building PharmaSense.
