@@ -1,0 +1,10 @@
+{
+  "dataset": "DrugBank Lite",
+  "source": "TogoDB",
+  "base_url": "https://togodb.org/entry/drugbank_lite/{id}",
+  "requested_ids": 200,
+  "successful_records": 200,
+  "failed_records": 0,
+  "failed_ids": [],
+  "drugs": []
+}
