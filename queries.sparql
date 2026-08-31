@@ -1,0 +1,92 @@
+PREFIX pharma: <http://example.org/pharmasense#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+#################################################################
+# Query 1 - Shared Target
+#################################################################
+SELECT DISTINCT ?drugId ?drugName ?targetName ?geneName ?function
+WHERE {
+    ?lepirudin pharma:drugName ?lepName ;
+              pharma:hasTarget ?target .
+    FILTER(LCASE(STR(?lepName)) = "lepirudin")
+
+    ?otherDrug pharma:hasTarget ?target ;
+               pharma:drugName ?drugName ;
+               pharma:drugBankId ?drugId .
+    FILTER(?otherDrug != ?lepirudin)
+
+    ?target pharma:geneName ?geneName ;
+            pharma:generalFunction ?function .
+
+    BIND(REPLACE(STR(?target), "http://example.org/pharmasense#Target_", "") AS ?targetName)
+}
+ORDER BY ?drugName
+
+#################################################################
+# Query 2 - Pathway Co-membership
+#################################################################
+SELECT ?drugId1 ?drugName1 ?drugId2 ?drugName2
+       (COUNT(DISTINCT ?pathway) AS ?sharedPathwayCount)
+WHERE {
+    ?drug1 pharma:drugName ?drugName1 ;
+           pharma:drugBankId ?drugId1 .
+    ?drug2 pharma:drugName ?drugName2 ;
+           pharma:drugBankId ?drugId2 .
+
+    ?drug1 (pharma:participatesInPathway|
+            pharma:hasTarget/pharma:associatedWithPathway) ?pathway .
+    ?drug2 (pharma:participatesInPathway|
+            pharma:hasTarget/pharma:associatedWithPathway) ?pathway .
+
+    FILTER(?drugId1 < ?drugId2)
+}
+GROUP BY ?drug1 ?drug2 ?drugId1 ?drugName1 ?drugId2 ?drugName2
+HAVING(COUNT(DISTINCT ?pathway) > 3)
+ORDER BY DESC(?sharedPathwayCount)
+
+#################################################################
+# Query 3 - Mechanism Cluster
+#################################################################
+SELECT DISTINCT ?drugId ?drugName ?atcCode
+WHERE {
+    ?drug pharma:drugName ?drugName ;
+          pharma:drugBankId ?drugId ;
+          pharma:mechanismOfAction ?mechanism ;
+          pharma:atcCode ?atcCode .
+    FILTER(CONTAINS(LCASE(STR(?mechanism)), "thrombin"))
+    FILTER(!STRSTARTS(STR(?atcCode), "B01"))
+}
+ORDER BY ?drugName
+
+#################################################################
+# Query 4 - Toxicity Risk
+#################################################################
+SELECT ?drugId ?drugName ?toxicity
+       (COUNT(DISTINCT ?category) AS ?categoryCount)
+       (COUNT(DISTINCT ?pathway) AS ?pathwayCount)
+WHERE {
+    ?drug pharma:drugName ?drugName ;
+          pharma:drugBankId ?drugId ;
+          pharma:toxicity ?toxicity ;
+          pharma:hasCategory ?category .
+
+    ?drug (pharma:participatesInPathway|
+           pharma:hasTarget/pharma:associatedWithPathway) ?pathway .
+
+    FILTER(CONTAINS(LCASE(STR(?toxicity)), "bleeding"))
+}
+GROUP BY ?drug ?drugId ?drugName ?toxicity
+HAVING(COUNT(DISTINCT ?category) > 1)
+ORDER BY DESC(?pathwayCount)
+
+#################################################################
+# Query 5 - OWL Inference
+#################################################################
+SELECT DISTINCT ?drug ?drugId ?drugName
+WHERE {
+    ?drug rdf:type pharma:BiotechDrug ;
+          rdf:type pharma:AnticoagulantDrug ;
+          pharma:drugBankId ?drugId ;
+          pharma:drugName ?drugName .
+}
+ORDER BY ?drugName
